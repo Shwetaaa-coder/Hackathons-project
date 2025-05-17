@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meme Creation Studio - MemeHub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background-color: #333;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #logo {
+      font-weight: bold;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    #content {
+      max-width: 900px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="file"], select, input[type="text"], input[type="number"], input[type="color"] {
+      padding: 5px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    #canvasContainer {
+      border: 1px solid #ccc;
+      width: 500px;
+      height: 500px;
+      position: relative;
+      margin-top: 20px;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+    #previewTextTop, #previewTextBottom {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px #000;
+      pointer-events: none;
+      user-select: none;
+    }
+    #previewTextTop {
+      top: 10px;
+    }
+    #previewTextBottom {
+      bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div id="logo" onclick="window.location.href='index.html'">MemeHub</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="meme-creation.html">Meme Creation Studio</a>
+    </nav>
+  </header>
+  <div id="content">
+    <h2>Meme Creation Studio</h2>
+
+    <div class="section">
+      <label for="imageUpload">Upload Image:</label>
+      <input type="file" id="imageUpload" accept="image/*" />
+    </div>
+
+    <div class="section">
+      <label for="templateSelect">Or pick a template:</label>
+      <select id="templateSelect">
+        <option value="">-- Select Template --</option>
+        <option value="https://i.imgflip.com/1ur9b0.jpg">Distracted Boyfriend</option>
+        <option value="https://i.imgflip.com/30b1gx.jpg">Drake Hotline Bling</option>
+        <option value="https://i.imgflip.com/1g8my4.jpg">Two Buttons</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <label for="topText">Top Text:</label>
+      <input type="text" id="topText" placeholder="Enter top text" />
+      <label for="bottomText">Bottom Text:</label>
+      <input type="text" id="bottomText" placeholder="Enter bottom text" />
+    </div>
+
+    <div class="section">
+      <label for="fontStyle">Font Style:</label>
+      <select id="fontStyle">
+        <option value="Impact">Impact</option>
+        <option value="Arial">Arial</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Courier New">Courier New</option>
+      </select>
+      <label for="fontSize">Font Size:</label>
+      <input type="number" id="fontSize" value="40" min="10" max="100" />
+      <label for="fontColor">Font Color:</label>
+      <input type="color" id="fontColor" value="#FFFFFF" />
+      <label for="fontAlign">Font Alignment:</label>
+      <select id="fontAlign">
+        <option value="center">Center</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <button id="aiCaptionImage">AI Caption Generator (Image)</button>
+      <button id="aiCaptionText">AI Caption Generator (Text)</button>
+    </div>
+
+    <div class="section">
+      <button id="saveDraft">Save as Draft</button>
+      <button id="publishMeme">Publish to Feed</button>
+    </div>
+
+    <div id="canvasContainer">
+      <canvas id="memeCanvas" width="500" height="500"></canvas>
+      <div id="previewTextTop"></div>
+      <div id="previewTextBottom"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
+      authDomain: "hackathons-project-83560.firebaseapp.com",
+      databaseURL: "https://hackathons-project-83560-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "hackathons-project-83560",
+      storageBucket: "hackathons-project-83560.firebasestorage.app",
+      messagingSenderId: "693799285364",
+      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721",
+      measurementId: "G-KJ3HEQ2DWR"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const canvas = document.getElementById('memeCanvas');
+    const ctx = canvas.getContext('2d');
+    const previewTextTop = document.getElementById('previewTextTop');
+    const previewTextBottom = document.getElementById('previewTextBottom');
+
+    const imageUpload = document.getElementById('imageUpload');
+    const templateSelect = document.getElementById('templateSelect');
+    const topTextInput = document.getElementById('topText');
+    const bottomTextInput = document.getElementById('bottomText');
+    const fontStyleSelect = document.getElementById('fontStyle');
+    const fontSizeInput = document.getElementById('fontSize');
+    const fontColorInput = document.getElementById('fontColor');
+    const fontAlignSelect = document.getElementById('fontAlign');
+
+    let currentImage = new Image();
+
+    function drawMeme() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (currentImage.src) {
+        ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+      }
+      ctx.fillStyle = fontColorInput.value;
+      ctx.textAlign = fontAlignSelect.value;
+      ctx.font = `${fontSizeInput.value}px ${fontStyleSelect.value}`;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'black';
+
+      // Draw top text
+      ctx.textBaseline = 'top';
+      const topX = fontAlignSelect.value === 'left' ? 10 : fontAlignSelect.value === 'right' ? canvas.width - 10 : canvas.width / 2;
+      ctx.strokeText(topTextInput.value.toUpperCase(), topX, 10);
+      ctx.fillText(topTextInput.value.toUpperCase(), topX, 10);
+
+      // Draw bottom text
+      ctx.textBaseline = 'bottom';
+      const bottomX = fontAlignSelect.value === 'left' ? 10 : fontAlignSelect.value === 'right' ? canvas.width - 10 : canvas.width / 2;
+      ctx.strokeText(bottomTextInput.value.toUpperCase(), bottomX, canvas.height - 10);
+      ctx.fillText(bottomTextInput.value.toUpperCase(), bottomX, canvas.height - 10);
+    }
+
+    imageUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        currentImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    templateSelect.addEventListener('change', (e) => {
+      if (e.target.value) {
+        currentImage.src = e.target.value;
+      }
+    });
+
+    currentImage.onload = () => {
+      drawMeme();
+    };
+
+    [topTextInput, bottomTextInput, fontStyleSelect, fontSizeInput, fontColorInput, fontAlignSelect].forEach(el => {
+      el.addEventListener('input', drawMeme);
+    });
+
+    // AI Caption Generator placeholders
+    document.getElementById('aiCaptionImage').addEventListener('click', () => {
+      alert('AI Caption Generator (Image) feature coming soon!');
+    });
+
+    document.getElementById('aiCaptionText').addEventListener('click', () => {
+      alert('AI Caption Generator (Text) feature coming soon!');
+    });
+
+    // Save draft placeholder
+    document.getElementById('saveDraft').addEventListener('click', () => {
+      alert('Save as Draft feature coming soon!');
+    });
+
+    // Publish to Firebase and redirect to gallery
+    document.getElementById('publishMeme').addEventListener('click', () => {
+      if (!currentImage.src) {
+        alert('Please upload or select an image before publishing.');
+        return;
+      }
+      const memeData = {
+        image: currentImage.src,
+        topText: topTextInput.value,
+        bottomText: bottomTextInput.value,
+        fontStyle: fontStyleSelect.value,
+        fontSize: fontSizeInput.value,
+        fontColor: fontColorInput.value,
+        fontAlign: fontAlignSelect.value,
+        tags: [] // Tags can be added later with AI suggestions
+      };
+      const memesRef = database.ref('memes');
+      memesRef.push(memeData, (error) => {
+        if (error) {
+          alert('Error publishing meme: ' + error.message);
+        } else {
+          alert('Meme published successfully!');
+          window.location.href = 'gallery.html';
+        }
+      });
+    });
+
+    // Initialize with blank image
+    currentImage.src = '';
+  </script>
+</body>
+</html>

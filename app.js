@@ -1,27 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import firebase from 'firebase/app';
-import 'firebase/database';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js';
+import { getDatabase, ref, onValue, push, set, off } from 'https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js';
 import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import MemeCreationStudio from './MemeCreationStudio.js';
 
-// Firebase configuration - replace with your own config
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
+  authDomain: "hackathons-project-83560.firebaseapp.com",
+  databaseURL: "https://hackathons-project-83560-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "hackathons-project-83560",
+  storageBucket: "hackathons-project-83560.firebasestorage.app",
+  messagingSenderId: "693799285364",
+  appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721",
+  measurementId: "G-KJ3HEQ2DWR"
 };
 
 // Initialize Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+function NavBar() {
+  return (
+    <nav style={{ backgroundColor: '#333', padding: '10px', color: 'white' }}>
+      <Link to="/" style={{ color: 'white', marginRight: '15px', textDecoration: 'none' }}>Home</Link>
+      <Link to="/create" style={{ color: 'white', textDecoration: 'none' }}>Meme Creation Studio</Link>
+    </nav>
+  );
 }
 
-const database = firebase.database();
+function Footer() {
+  return (
+    <footer style={{ backgroundColor: '#333', padding: '10px', color: 'white', marginTop: '20px', textAlign: 'center' }}>
+      <p>&copy; 2024 MemeHub. All rights reserved.</p>
+    </footer>
+  );
+}
 
 function Home() {
   const [message, setMessage] = useState('Loading MemeHub...');
@@ -35,41 +50,45 @@ function Home() {
   useEffect(() => {
     setMessage('Welcome to MemeHub');
 
-    // Listen for memes in the database
-    const memesRef = database.ref('memes');
-    memesRef.on('value', (snapshot) => {
+    const memesRef = ref(database, 'memes');
+    const votesRef = ref(database, 'votes');
+    const commentsRef = ref(database, 'comments');
+    const flagsRef = ref(database, 'flags');
+
+    const memesListener = onValue(memesRef, (snapshot) => {
       const data = snapshot.val();
-      const memesList = data ? Object.entries(data).map(([key, value]) => ({ id: key, ...value })) : [];
-      setMemes(memesList);
+      console.log('Memes data:', data);
+      if (data) {
+        const memesList = Object.entries(data).map(([key, value]) => ({ id: key, ...value }));
+        setMemes(memesList);
+      } else {
+        setMemes([]);
+      }
+    }, (error) => {
+      console.error('Error fetching memes:', error);
+      setMessage('Error loading memes');
     });
 
-    // Listen for votes
-    const votesRef = database.ref('votes');
-    votesRef.on('value', (snapshot) => {
+    const votesListener = onValue(votesRef, (snapshot) => {
       const data = snapshot.val() || {};
       setUserVotes(data);
     });
 
-    // Listen for comments
-    const commentsRef = database.ref('comments');
-    commentsRef.on('value', (snapshot) => {
+    const commentsListener = onValue(commentsRef, (snapshot) => {
       const data = snapshot.val() || {};
       setComments(data);
     });
 
-    // Listen for flags
-    const flagsRef = database.ref('flags');
-    flagsRef.on('value', (snapshot) => {
+    const flagsListener = onValue(flagsRef, (snapshot) => {
       const data = snapshot.val() || {};
       setFlags(data);
     });
 
-    // Cleanup listeners on unmount
     return () => {
-      memesRef.off();
-      votesRef.off();
-      commentsRef.off();
-      flagsRef.off();
+      off(memesRef, 'value', memesListener);
+      off(votesRef, 'value', votesListener);
+      off(commentsRef, 'value', commentsListener);
+      off(flagsRef, 'value', flagsListener);
     };
   }, []);
 
@@ -77,24 +96,22 @@ function Home() {
     e.preventDefault();
     if (newMeme.trim() === '') return;
 
-    // Push new meme to database
-    const memesRef = database.ref('memes');
-    memesRef.push({ text: newMeme.trim(), tags: [] });
+    const memesRef = ref(database, 'memes');
+    const newMemeRef = push(memesRef);
+    set(newMemeRef, { text: newMeme.trim(), tags: [] });
 
     setNewMeme('');
   };
 
   const handleVote = (memeId, voteValue) => {
-    // One vote per user per meme: store vote in Firebase under votes/memeId/userId
-    // For simplicity, use localStorage userId or generate one
     let userId = localStorage.getItem('userId');
     if (!userId) {
       userId = 'user_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('userId', userId);
     }
 
-    const voteRef = database.ref(`votes/${memeId}/${userId}`);
-    voteRef.set(voteValue);
+    const voteRef = ref(database, `votes/${memeId}/${userId}`);
+    set(voteRef, voteValue);
   };
 
   const getVoteCount = (memeId) => {
@@ -111,26 +128,22 @@ function Home() {
     const text = commentInputs[memeId];
     if (!text || text.trim() === '' || text.length > 140) return;
 
-    const commentRef = database.ref(`comments/${memeId}`);
-    const newCommentRef = commentRef.push();
-    newCommentRef.set({ text: text.trim() });
+    const commentRef = ref(database, `comments/${memeId}`);
+    const newCommentRef = push(commentRef);
+    set(newCommentRef, { text: text.trim() });
 
     setCommentInputs((prev) => ({ ...prev, [memeId]: '' }));
   };
 
   const handleFlag = (memeId) => {
-    const flagRef = database.ref(`flags/${memeId}`);
-    flagRef.set(true);
+    const flagRef = ref(database, `flags/${memeId}`);
+    set(flagRef, true);
   };
 
   return (
     <div>
       <h1>{message}</h1>
       <p>This is the initial setup of MemeHub with Firebase Realtime Database.</p>
-
-      <nav>
-        <Link to="/create">Go to Meme Creation Studio</Link>
-      </nav>
 
       <form onSubmit={handleSubmit}>
         <input
@@ -183,10 +196,12 @@ function Home() {
 function App() {
   return (
     <Router>
+      <NavBar />
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/create" component={MemeCreationStudio} />
       </Switch>
+      <Footer />
     </Router>
   );
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MemeHub</title>
+  <title>Meme Gallery - MemeHub</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,19 +22,13 @@
     #logo {
       font-weight: bold;
       font-size: 24px;
-      cursor: default;
-    }
-    #loginToggle {
-      background-color: #555;
-      border: none;
-      color: white;
-      padding: 8px 16px;
-      font-size: 16px;
       cursor: pointer;
-      border-radius: 4px;
     }
-    #loginToggle:hover {
-      background-color: #777;
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
     }
     #content {
       max-width: 900px;
@@ -43,28 +37,6 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    nav {
-      margin-bottom: 20px;
-    }
-    nav a {
-      margin-right: 15px;
-      font-weight: bold;
-      color: #007bff;
-      text-decoration: none;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    form input[type="text"] {
-      width: 70%;
-      padding: 8px;
-      margin-right: 10px;
-      font-size: 16px;
-    }
-    form button {
-      padding: 8px 16px;
-      font-size: 16px;
     }
     ul#memes {
       list-style: none;
@@ -120,20 +92,15 @@
 </head>
 <body>
   <header>
-    <div id="logo">MemeHub</div>
-    <button id="loginToggle">Log In</button>
-  </header>
-  <div id="content">
+    <div id="logo" onclick="window.location.href='index.html'">MemeHub</div>
     <nav>
       <a href="index.html">Home</a>
-      <a href="meme-creation.html">Meme Creation Studio</a>
       <a href="gallery.html">Gallery</a>
+      <a href="meme-creation.html">Meme Creation Studio</a>
     </nav>
-    <h2>Welcome to MemeHub</h2>
-    <form id="addMemeForm">
-      <input type="text" id="newMemeText" placeholder="Enter a new meme" required />
-      <button type="submit">Add Meme</button>
-    </form>
+  </header>
+  <div id="content">
+    <h2>Meme Gallery</h2>
     <ul id="memes"></ul>
   </div>
   <footer style="background-color: #333; padding: 10px; color: white; text-align: center; margin-top: 20px;">
@@ -159,24 +126,28 @@
 
     // DOM elements
     const memesList = document.getElementById('memes');
-    const addMemeForm = document.getElementById('addMemeForm');
-    const newMemeText = document.getElementById('newMemeText');
-    const loginToggle = document.getElementById('loginToggle');
-
-    // User login state simulation
-    let loggedIn = false;
-
-    loginToggle.addEventListener('click', () => {
-      loggedIn = !loggedIn;
-      loginToggle.textContent = loggedIn ? 'Log Out' : 'Log In';
-      alert(loggedIn ? 'Logged In' : 'Logged Out');
-    });
 
     // User ID for voting
     let userId = localStorage.getItem('userId');
     if (!userId) {
       userId = 'user_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('userId', userId);
+    }
+
+    // Debounce helper
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Basic profanity filter (example)
+    const bannedWords = ['badword1', 'badword2', 'badword3'];
+    function containsBannedWords(text) {
+      const lower = text.toLowerCase();
+      return bannedWords.some(word => lower.includes(word));
     }
 
     // Load memes from Firebase
@@ -216,23 +187,13 @@
       });
     }
 
-    // Add new meme
-    addMemeForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const text = newMemeText.value.trim();
-      if (text === '') return;
-      const memesRef = database.ref('memes');
-      memesRef.push({ text, tags: [] });
-      newMemeText.value = '';
-    });
-
     // Attach event listeners to buttons and forms
     function attachEventListeners() {
       document.querySelectorAll('.upvote').forEach(button => {
-        button.onclick = () => handleVote(button.dataset.id, 1);
+        button.onclick = debounce(() => handleVote(button.dataset.id, 1), 300);
       });
       document.querySelectorAll('.downvote').forEach(button => {
-        button.onclick = () => handleVote(button.dataset.id, -1);
+        button.onclick = debounce(() => handleVote(button.dataset.id, -1), 300);
       });
       document.querySelectorAll('.flag').forEach(button => {
         button.onclick = () => handleFlag(button.dataset.id);
@@ -244,18 +205,29 @@
           const input = form.querySelector('input[type="text"]');
           const text = input.value.trim();
           if (text === '' || text.length > 140) return;
+          if (containsBannedWords(text)) {
+            alert('Your comment contains inappropriate language.');
+            return;
+          }
           handleCommentSubmit(memeId, text);
           input.value = '';
         };
       });
     }
 
-    // Handle voting
+    // Optimistic UI update for voting
+    const voteCache = {};
     function handleVote(memeId, voteValue) {
-      if (!loggedIn) {
-        alert('Please log in to vote.');
-        return;
-      }
+      // Optimistically update UI
+      const voteSpan = document.getElementById(`votes-${memeId}`);
+      if (!voteSpan) return;
+      let currentVotes = parseInt(voteSpan.textContent.replace('Votes: ', '')) || 0;
+      if (!voteCache[memeId]) voteCache[memeId] = 0;
+      currentVotes = currentVotes - voteCache[memeId] + voteValue;
+      voteSpan.textContent = `Votes: ${currentVotes}`;
+      voteCache[memeId] = voteValue;
+
+      // Update Firebase
       const voteRef = database.ref(`votes/${memeId}/${userId}`);
       voteRef.set(voteValue);
     }
@@ -269,18 +241,16 @@
           const voteCount = Object.values(votes).reduce((acc, val) => acc + val, 0);
           const voteSpan = document.getElementById(`votes-${memeId}`);
           if (voteSpan) voteSpan.textContent = `Votes: ${voteCount}`;
+          voteCache[memeId] = 0; // reset cache on load
         });
       });
     }
 
     // Handle flagging
     function handleFlag(memeId) {
-      if (!loggedIn) {
-        alert('Please log in to flag content.');
-        return;
-      }
       const flagRef = database.ref(`flags/${memeId}`);
       flagRef.set(true);
+      alert('Content flagged for moderation.');
     }
 
     // Load flags and update UI
@@ -297,10 +267,6 @@
 
     // Handle comment submission
     function handleCommentSubmit(memeId, text) {
-      if (!loggedIn) {
-        alert('Please log in to comment.');
-        return;
-      }
       const commentRef = database.ref(`comments/${memeId}`);
       commentRef.push({ text });
     }
@@ -322,6 +288,11 @@
           }
         });
       });
+    }
+
+    // Placeholder for AI tag suggestions
+    function suggestTags(memeId) {
+      alert('AI tag suggestion feature coming soon!');
     }
 
     // Initial load
