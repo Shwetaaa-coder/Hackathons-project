@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MemeHub</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f9f9f9, #e0eafc);
+      margin: 0;
+      padding: 0;
+    }
+    
+    #memes-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    
+    .meme-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .meme-card img {
+      width: 100%;
+      height: auto;
+      border-bottom: 2px solid #ccc;
+    }
+
+    .meme-card .caption {
+      padding: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="text-align: center; padding: 20px; background: linear-gradient(to right, #1f4037, #99f2c8); color: white;">
+      MemeHub
+    </h1>
+  </header>
+
+  <div id="memes-container"></div>
+
+  <script>
+    // Fetch memes data from the Meme Generator API (Imgflip)
+    async function fetchMemes() {
+      try {
+        const response = await fetch('https://api.imgflip.com/get_memes');
+        const data = await response.json();
+
+        // Check if API response is valid
+        if (data.success) {
+          const memes = data.data.memes;
+          const memesContainer = document.getElementById('memes-container');
+
+          // Clear the container before adding new memes
+          memesContainer.innerHTML = '';
+
+          memes.forEach(meme => {
+            // Create meme card element
+            const memeCard = document.createElement('div');
+            memeCard.classList.add('meme-card');
+
+            // Add image to meme card
+            const memeImage = document.createElement('img');
+            memeImage.src = meme.url;
+            memeImage.alt = meme.name;
+            memeCard.appendChild(memeImage);
+
+            // Add caption to meme card
+            const memeCaption = document.createElement('div');
+            memeCaption.classList.add('caption');
+            memeCaption.innerText = meme.name;
+            memeCard.appendChild(memeCaption);
+
+            // Append the meme card to the container
+            memesContainer.appendChild(memeCard);
+          });
+        } else {
+          console.error('Failed to fetch memes');
+        }
+      } catch (error) {
+        console.error('Error fetching memes:', error);
+      }
+    }
+
+    // Call the fetchMemes function to load memes on page load
+    window.onload = fetchMemes;
+  </script>
+</body>
+</html>

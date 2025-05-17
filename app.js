@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js';
 import { getDatabase, ref, onValue, push, set, off } from 'https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js';
 import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import MemeCreationStudio from './MemeCreationStudio.js';
 
@@ -20,12 +21,26 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-function NavBar() {
+function NavBar({ user, onLogin, onLogout }) {
   return (
-    <nav style={{ backgroundColor: '#333', padding: '10px', color: 'white' }}>
-      <Link to="/" style={{ color: 'white', marginRight: '15px', textDecoration: 'none' }}>Home</Link>
-      <Link to="/create" style={{ color: 'white', textDecoration: 'none' }}>Meme Creation Studio</Link>
+    <nav style={{ backgroundColor: '#333', padding: '10px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div>
+        <Link to="/" style={{ color: 'white', marginRight: '15px', textDecoration: 'none' }}>Home</Link>
+        <Link to="/create" style={{ color: 'white', textDecoration: 'none' }}>Meme Creation Studio</Link>
+      </div>
+      <div>
+        {user ? (
+          <>
+            <span style={{ marginRight: '15px' }}>Hello, {user.displayName || user.email}</span>
+            <button onClick={onLogout} style={{ cursor: 'pointer' }}>Log Out</button>
+          </>
+        ) : (
+          <button onClick={onLogin} style={{ cursor: 'pointer' }}>Log In with Google</button>
+        )}
+      </div>
     </nav>
   );
 }
@@ -38,7 +53,7 @@ function Footer() {
   );
 }
 
-function Home() {
+function Home({ user }) {
   const [message, setMessage] = useState('Loading MemeHub...');
   const [memes, setMemes] = useState([]);
   const [newMeme, setNewMeme] = useState('');
@@ -57,7 +72,6 @@ function Home() {
 
     const memesListener = onValue(memesRef, (snapshot) => {
       const data = snapshot.val();
-      console.log('Memes data:', data);
       if (data) {
         const memesList = Object.entries(data).map(([key, value]) => ({ id: key, ...value }));
         setMemes(memesList);
@@ -104,12 +118,11 @@ function Home() {
   };
 
   const handleVote = (memeId, voteValue) => {
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('userId', userId);
+    if (!user) {
+      alert('Please log in to vote.');
+      return;
     }
-
+    const userId = user.uid;
     const voteRef = ref(database, `votes/${memeId}/${userId}`);
     set(voteRef, voteValue);
   };
@@ -127,15 +140,22 @@ function Home() {
     e.preventDefault();
     const text = commentInputs[memeId];
     if (!text || text.trim() === '' || text.length > 140) return;
-
+    if (!user) {
+      alert('Please log in to comment.');
+      return;
+    }
     const commentRef = ref(database, `comments/${memeId}`);
     const newCommentRef = push(commentRef);
-    set(newCommentRef, { text: text.trim() });
+    set(newCommentRef, { text: text.trim(), userId: user.uid, userName: user.displayName || user.email });
 
     setCommentInputs((prev) => ({ ...prev, [memeId]: '' }));
   };
 
   const handleFlag = (memeId) => {
+    if (!user) {
+      alert('Please log in to flag content.');
+      return;
+    }
     const flagRef = ref(database, `flags/${memeId}`);
     set(flagRef, true);
   };
@@ -161,8 +181,8 @@ function Home() {
             <p>{meme.text}</p>
             <p>Tags: {(meme.tags || []).join(', ')}</p>
             <div>
-              <button onClick={() => handleVote(meme.id, 1)} disabled={userVotes[meme.id]?.[localStorage.getItem('userId')] === 1}>Upvote</button>
-              <button onClick={() => handleVote(meme.id, -1)} disabled={userVotes[meme.id]?.[localStorage.getItem('userId')] === -1}>Downvote</button>
+              <button onClick={() => handleVote(meme.id, 1)} disabled={userVotes[meme.id]?.[user?.uid] === 1}>Upvote</button>
+              <button onClick={() => handleVote(meme.id, -1)} disabled={userVotes[meme.id]?.[user?.uid] === -1}>Downvote</button>
               <span>Votes: {getVoteCount(meme.id)}</span>
             </div>
             <div>
@@ -182,7 +202,9 @@ function Home() {
               </form>
               <ul>
                 {(comments[meme.id] ? Object.entries(comments[meme.id]) : []).map(([commentId, comment]) => (
-                  <li key={commentId}>{comment.text}</li>
+                  <li key={commentId}>
+                    {comment.text} {comment.userName ? <em>by {comment.userName}</em> : null}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -194,11 +216,32 @@ function Home() {
 }
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = () => {
+    signInWithPopup(auth, provider).catch((error) => {
+      alert('Login failed: ' + error.message);
+    });
+  };
+
+  const handleLogout = () => {
+    signOut(auth).catch((error) => {
+      alert('Logout failed: ' + error.message);
+    });
+  };
+
   return (
     <Router>
-      <NavBar />
+      <NavBar user={user} onLogin={handleLogin} onLogout={handleLogout} />
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" render={() => <Home user={user} />} />
         <Route path="/create" component={MemeCreationStudio} />
       </Switch>
       <Footer />

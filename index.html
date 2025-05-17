@@ -2,329 +2,272 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MemeHub</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f9f9f9, #e0eafc);
     }
+
     header {
-      background-color: #333;
+      background: linear-gradient(90deg, #1f4037, #99f2c8);
       color: white;
-      padding: 10px 20px;
+      padding: 15px 30px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
-    #logo {
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
       font-weight: bold;
-      font-size: 24px;
-      cursor: default;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background 0.3s;
     }
-    #loginToggle {
-      background-color: #555;
+
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-dropdown {
+      position: relative;
+    }
+
+    .profile-dropdown button {
+      background: transparent;
       border: none;
       color: white;
-      padding: 8px 16px;
-      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: white;
+      color: black;
+      min-width: 200px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border-radius: 5px;
+      padding: 10px;
+    }
+
+    .dropdown-content p {
+      margin: 0 0 10px;
+    }
+
+    .dropdown-content button {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px;
+      width: 100%;
       border-radius: 4px;
+      cursor: pointer;
     }
-    #loginToggle:hover {
-      background-color: #777;
+
+    .profile-dropdown:hover .dropdown-content {
+      display: block;
     }
-    #content {
-      max-width: 900px;
-      margin: 20px auto;
+
+    .auth-box {
+      margin: 30px auto;
+      max-width: 400px;
       background: white;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
-    nav {
-      margin-bottom: 20px;
+
+    .auth-box input {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
     }
-    nav a {
-      margin-right: 15px;
-      font-weight: bold;
-      color: #007bff;
-      text-decoration: none;
+
+    .auth-box button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background: #1f4037;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    nav a:hover {
-      text-decoration: underline;
+
+    #welcome {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 20px;
     }
-    form input[type="text"] {
-      width: 70%;
-      padding: 8px;
+
+    #content {
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    #addMemeForm input, #addMemeForm button {
+      padding: 10px;
+      font-size: 16px;
       margin-right: 10px;
-      font-size: 16px;
     }
-    form button {
-      padding: 8px 16px;
-      font-size: 16px;
-    }
-    ul#memes {
-      list-style: none;
-      padding: 0;
-    }
+
     ul#memes li {
+      padding: 10px;
       border-bottom: 1px solid #ccc;
-      padding: 10px 0;
-    }
-    .meme-text {
-      font-size: 18px;
-      margin-bottom: 5px;
-    }
-    .meme-tags {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 5px;
-    }
-    .meme-actions button {
-      margin-right: 5px;
-    }
-    .comments {
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .comments ul {
       list-style: none;
-      padding-left: 0;
-    }
-    .comments li {
-      border-top: 1px solid #eee;
-      padding: 5px 0;
-    }
-    .comment-input {
-      margin-top: 5px;
-    }
-    .comment-input input[type="text"] {
-      width: 60%;
-      padding: 5px;
-      font-size: 14px;
-    }
-    .comment-input button {
-      padding: 5px 10px;
-      font-size: 14px;
-    }
-    .flagged {
-      color: red;
-      font-weight: bold;
     }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js"></script>
 </head>
 <body>
   <header>
-    <div id="logo">MemeHub</div>
-    <button id="loginToggle">Log In</button>
+    <div class="nav-links">
+      <a href="#">🏠 Home</a>
+      <a href="#">🔍 Explore</a>
+      <a href="#">🎨 Create Meme</a>
+    </div>
+    <div class="profile-dropdown" id="profileSection" style="display:none;">
+      <button>👤 Profile</button>
+      <div class="dropdown-content">
+        <p id="userEmail">Email: user@example.com</p>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
   </header>
+
+  <div class="auth-box" id="authBox">
+    <input type="email" id="emailInput" placeholder="Email" />
+    <input type="password" id="passwordInput" placeholder="Password" />
+    <button id="loginButton">Login</button>
+    <button id="registerButton">Register</button>
+  </div>
+
+  <div id="welcome"></div>
+
   <div id="content">
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="meme-creation.html">Meme Creation Studio</a>
-      <a href="gallery.html">Gallery</a>
-    </nav>
-    <h2>Welcome to MemeHub</h2>
     <form id="addMemeForm">
-      <input type="text" id="newMemeText" placeholder="Enter a new meme" required />
-      <button type="submit">Add Meme</button>
+      <input type="text" id="newMemeText" placeholder="Your meme caption..." required />
+      <button type="submit">Post Meme</button>
     </form>
+
     <ul id="memes"></ul>
   </div>
-  <footer style="background-color: #333; padding: 10px; color: white; text-align: center; margin-top: 20px;">
-    &copy; 2024 MemeHub. All rights reserved.
-  </footer>
 
-  <script>
-    // Firebase configuration
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
       authDomain: "hackathons-project-83560.firebaseapp.com",
       databaseURL: "https://hackathons-project-83560-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "hackathons-project-83560",
-      storageBucket: "hackathons-project-83560.firebasestorage.app",
+      storageBucket: "hackathons-project-83560.appspot.com",
       messagingSenderId: "693799285364",
       appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721",
       measurementId: "G-KJ3HEQ2DWR"
     };
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
 
-    // DOM elements
     const memesList = document.getElementById('memes');
     const addMemeForm = document.getElementById('addMemeForm');
     const newMemeText = document.getElementById('newMemeText');
-    const loginToggle = document.getElementById('loginToggle');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginButton = document.getElementById('loginButton');
+    const registerButton = document.getElementById('registerButton');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userEmail = document.getElementById('userEmail');
+    const profileSection = document.getElementById('profileSection');
+    const authBox = document.getElementById('authBox');
+    const welcome = document.getElementById('welcome');
 
-    // User login state simulation
-    let loggedIn = false;
+    let currentUser = null;
 
-    loginToggle.addEventListener('click', () => {
-      loggedIn = !loggedIn;
-      loginToggle.textContent = loggedIn ? 'Log Out' : 'Log In';
-      alert(loggedIn ? 'Logged In' : 'Logged Out');
+    // Auth state change
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (user) {
+        profileSection.style.display = 'block';
+        authBox.style.display = 'none';
+        userEmail.textContent = `Email: ${user.email}`;
+        welcome.innerHTML = `👋 Welcome, <strong>${user.email}</strong>`;
+      } else {
+        profileSection.style.display = 'none';
+        authBox.style.display = 'block';
+        welcome.innerHTML = '';
+      }
     });
 
-    // User ID for voting
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('userId', userId);
-    }
+    loginButton.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!email || !password) return alert('Enter both email and password.');
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => alert('Logged in!'))
+        .catch(err => alert('Login failed: ' + err.message));
+    });
 
-    // Load memes from Firebase
-    function loadMemes() {
-      const memesRef = database.ref('memes');
-      memesRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        memesList.innerHTML = '';
-        if (data) {
-          Object.entries(data).forEach(([id, meme]) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <div class="meme-text">${meme.text}</div>
-              <div class="meme-tags">${(meme.tags || []).join(', ')}</div>
-              <div class="meme-actions">
-                <button data-id="${id}" class="upvote">Upvote</button>
-                <button data-id="${id}" class="downvote">Downvote</button>
-                <span class="votes" id="votes-${id}">Votes: 0</span>
-                <button data-id="${id}" class="flag">Flag/Report</button>
-                <span class="flagged" id="flagged-${id}" style="display:none;">Flagged for review</span>
-              </div>
-              <div class="comments">
-                <form data-id="${id}" class="comment-form">
-                  <input type="text" maxlength="140" placeholder="Add a comment (max 140 chars)" required />
-                  <button type="submit">Comment</button>
-                </form>
-                <ul id="comments-${id}"></ul>
-              </div>
-            `;
-            memesList.appendChild(li);
-          });
-          attachEventListeners();
-          loadVotes();
-          loadFlags();
-          loadComments();
-        }
-      });
-    }
+    registerButton.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!email || !password) return alert('Enter both email and password.');
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => alert('Registered successfully.'))
+        .catch(err => alert('Register failed: ' + err.message));
+    });
 
-    // Add new meme
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth).catch(err => alert('Logout failed: ' + err.message));
+    });
+
     addMemeForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const text = newMemeText.value.trim();
       if (text === '') return;
-      const memesRef = database.ref('memes');
-      memesRef.push({ text, tags: [] });
+      if (!currentUser) return alert('Login to post memes.');
+      const memeRef = push(ref(database, 'memes'));
+      set(memeRef, { text, author: currentUser.email, tags: [] });
       newMemeText.value = '';
     });
 
-    // Attach event listeners to buttons and forms
-    function attachEventListeners() {
-      document.querySelectorAll('.upvote').forEach(button => {
-        button.onclick = () => handleVote(button.dataset.id, 1);
-      });
-      document.querySelectorAll('.downvote').forEach(button => {
-        button.onclick = () => handleVote(button.dataset.id, -1);
-      });
-      document.querySelectorAll('.flag').forEach(button => {
-        button.onclick = () => handleFlag(button.dataset.id);
-      });
-      document.querySelectorAll('.comment-form').forEach(form => {
-        form.onsubmit = (e) => {
-          e.preventDefault();
-          const memeId = form.dataset.id;
-          const input = form.querySelector('input[type="text"]');
-          const text = input.value.trim();
-          if (text === '' || text.length > 140) return;
-          handleCommentSubmit(memeId, text);
-          input.value = '';
-        };
+    function loadMemes() {
+      onValue(ref(database, 'memes'), (snapshot) => {
+        memesList.innerHTML = '';
+        const data = snapshot.val();
+        if (data) {
+          Object.values(data).forEach(meme => {
+            const li = document.createElement('li');
+            li.textContent = `${meme.text} — ${meme.author}`;
+            memesList.appendChild(li);
+          });
+        }
       });
     }
 
-    // Handle voting
-    function handleVote(memeId, voteValue) {
-      if (!loggedIn) {
-        alert('Please log in to vote.');
-        return;
-      }
-      const voteRef = database.ref(`votes/${memeId}/${userId}`);
-      voteRef.set(voteValue);
-    }
-
-    // Load votes and update UI
-    function loadVotes() {
-      const votesRef = database.ref('votes');
-      votesRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        Object.entries(data).forEach(([memeId, votes]) => {
-          const voteCount = Object.values(votes).reduce((acc, val) => acc + val, 0);
-          const voteSpan = document.getElementById(`votes-${memeId}`);
-          if (voteSpan) voteSpan.textContent = `Votes: ${voteCount}`;
-        });
-      });
-    }
-
-    // Handle flagging
-    function handleFlag(memeId) {
-      if (!loggedIn) {
-        alert('Please log in to flag content.');
-        return;
-      }
-      const flagRef = database.ref(`flags/${memeId}`);
-      flagRef.set(true);
-    }
-
-    // Load flags and update UI
-    function loadFlags() {
-      const flagsRef = database.ref('flags');
-      flagsRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        Object.entries(data).forEach(([memeId, flagged]) => {
-          const flagSpan = document.getElementById(`flagged-${memeId}`);
-          if (flagSpan) flagSpan.style.display = flagged ? 'inline' : 'none';
-        });
-      });
-    }
-
-    // Handle comment submission
-    function handleCommentSubmit(memeId, text) {
-      if (!loggedIn) {
-        alert('Please log in to comment.');
-        return;
-      }
-      const commentRef = database.ref(`comments/${memeId}`);
-      commentRef.push({ text });
-    }
-
-    // Load comments and update UI
-    function loadComments() {
-      const commentsRef = database.ref('comments');
-      commentsRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        Object.entries(data).forEach(([memeId, comments]) => {
-          const commentsUl = document.getElementById(`comments-${memeId}`);
-          if (commentsUl) {
-            commentsUl.innerHTML = '';
-            Object.values(comments).forEach(comment => {
-              const li = document.createElement('li');
-              li.textContent = comment.text;
-              commentsUl.appendChild(li);
-            });
-          }
-        });
-      });
-    }
-
-    // Initial load
     loadMemes();
   </script>
 </body>
