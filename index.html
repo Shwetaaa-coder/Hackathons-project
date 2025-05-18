@@ -1,178 +1,77 @@
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MemeHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MemeHub - Login/Register</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #f9f9f9, #e0eafc);
-    }
-
-    header {
-      background: linear-gradient(90deg, #1f4037, #99f2c8);
-      color: white;
-      padding: 15px 30px;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 5px;
-      transition: background 0.3s;
-    }
-
-    .nav-links a:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .profile-dropdown {
-      position: relative;
-    }
-
-    .profile-dropdown button {
-      background: transparent;
-      border: none;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      background: white;
-      color: black;
-      min-width: 200px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      border-radius: 5px;
-      padding: 10px;
-    }
-
-    .dropdown-content p {
-      margin: 0 0 10px;
-    }
-
-    .dropdown-content button {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      padding: 8px;
-      width: 100%;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .profile-dropdown:hover .dropdown-content {
-      display: block;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
 
     .auth-box {
-      margin: 30px auto;
-      max-width: 400px;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 30px;
+      border-radius: 12px;
       box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
+    }
+
+    .auth-box h2 {
+      margin-bottom: 20px;
+      color: #333;
     }
 
     .auth-box input {
-      display: block;
-      width: 95%;
-      margin-bottom: 10px;
-      padding: 10px;
+      width: 90%;
+      padding: 12px;
+      margin-bottom: 15px;
       font-size: 16px;
-      align-items: center;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
     .auth-box button {
       width: 95%;
-      padding: 10px;
-      font-size: 16px;
-      background: #1f4037;
+      padding: 12px;
+      margin-bottom: 10px;
+      background-color: #1f4037;
       color: white;
+      font-size: 16px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin: 2px;
     }
 
-    #welcome {
-      text-align: center;
-      font-size: 20px;
-      margin-top: 20px;
-    }
-
-    #content {
-      max-width: 800px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    #addMemeForm input, #addMemeForm button {
-      padding: 10px;
-      font-size: 16px;
-      margin-right: 10px;
-    }
-
-    ul#memes li {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-      list-style: none;
+    .auth-box button:hover {
+      background-color: #145b4b;
     }
   </style>
 </head>
 <body>
-  <header>
-    <!-- <div class="nav-links">
-      <a href="#">🏠 Home</a>
-      <a href="#">🔍 Explore</a>
-      <a href="#">🎨 Create Meme</a>
-    </div> -->
-    <div class="profile-dropdown" id="profileSection" style="display:none;">
-      <!-- <button>👤 Profile</button> -->
-      <div id="welcome"></div>
-      <div class="dropdown-content">
-        <p id="userEmail">Email: user@example.com</p>
-        <button id="logoutBtn">Logout</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="auth-box" id="authBox">
+  <div class="auth-box">
+    <h2>MemeHub Login</h2>
     <input type="email" id="emailInput" placeholder="Email" />
     <input type="password" id="passwordInput" placeholder="Password" />
     <button id="loginButton">Login</button>
     <button id="registerButton">Register</button>
   </div>
 
-  <!-- <div id="welcome"></div> -->
-
-  
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-    import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
@@ -181,91 +80,52 @@
       projectId: "hackathons-project-83560",
       storageBucket: "hackathons-project-83560.appspot.com",
       messagingSenderId: "693799285364",
-      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721",
-      measurementId: "G-KJ3HEQ2DWR"
+      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721"
     };
 
     const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
     const auth = getAuth(app);
 
-    const memesList = document.getElementById('memes');
-    const addMemeForm = document.getElementById('addMemeForm');
-    const newMemeText = document.getElementById('newMemeText');
-    const emailInput = document.getElementById('emailInput');
-    const passwordInput = document.getElementById('passwordInput');
-    const loginButton = document.getElementById('loginButton');
-    const registerButton = document.getElementById('registerButton');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const userEmail = document.getElementById('userEmail');
-    const profileSection = document.getElementById('profileSection');
-    const authBox = document.getElementById('authBox');
-    const welcome = document.getElementById('welcome');
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const loginButton = document.getElementById("loginButton");
+    const registerButton = document.getElementById("registerButton");
 
-    let currentUser = null;
+    loginButton.addEventListener("click", () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
 
-    // Auth state change
-    onAuthStateChanged(auth, (user) => {
-      currentUser = user;
-      if (user) {
-        profileSection.style.display = 'block';
-        authBox.style.display = 'none';
-        userEmail.textContent = `Email: ${user.email}`;
-        welcome.innerHTML = `👋 Welcome, <strong>${user.email}</strong>`;
-      } else {
-        profileSection.style.display = 'none';
-        authBox.style.display = 'block';
-        welcome.innerHTML = '';
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
       }
-    });
 
-    loginButton.addEventListener('click', () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-      if (!email || !password) return alert('Enter both email and password.');
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => alert('Logged in!'))
-        .catch(err => alert('Login failed: ' + err.message));
+        .then(() => {
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
     });
 
-    registerButton.addEventListener('click', () => {
+    registerButton.addEventListener("click", () => {
       const email = emailInput.value.trim();
       const password = passwordInput.value.trim();
-      if (!email || !password) return alert('Enter both email and password.');
+
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
+
       createUserWithEmailAndPassword(auth, email, password)
-        .then(() => alert('Registered successfully.'))
-        .catch(err => alert('Register failed: ' + err.message));
+        .then(() => {
+          alert("Registration successful. You can now log in.");
+        })
+        .catch((error) => {
+          alert("Registration failed: " + error.message);
+        });
     });
-
-    logoutBtn.addEventListener('click', () => {
-      signOut(auth).catch(err => alert('Logout failed: ' + err.message));
-    });
-
-    addMemeForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const text = newMemeText.value.trim();
-      if (text === '') return;
-      if (!currentUser) return alert('Login to post memes.');
-      const memeRef = push(ref(database, 'memes'));
-      set(memeRef, { text, author: currentUser.email, tags: [] });
-      newMemeText.value = '';
-    });
-
-    function loadMemes() {
-      onValue(ref(database, 'memes'), (snapshot) => {
-        memesList.innerHTML = '';
-        const data = snapshot.val();
-        if (data) {
-          Object.values(data).forEach(meme => {
-            const li = document.createElement('li');
-            li.textContent = `${meme.text} — ${meme.author}`;
-            memesList.appendChild(li);
-          });
-        }
-      });
-    }
-
-    // loadMemes();
   </script>
 </body>
 </html>

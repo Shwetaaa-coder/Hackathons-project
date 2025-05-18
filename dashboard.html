@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - MemeHub</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f2f2;
+    }
+
+    header {
+      background: #1f4037;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logout-btn {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .email-info {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div id="userWelcome">Welcome!</div>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </header>
+
+  <div class="container">
+    <h1>Dashboard</h1>
+    <div class="email-info" id="emailInfo">Loading user info...</div>
+    <p>Here you can access your memes, edit profile, and more!</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
+      authDomain: "hackathons-project-83560.firebaseapp.com",
+      databaseURL: "https://hackathons-project-83560-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "hackathons-project-83560",
+      storageBucket: "hackathons-project-83560.appspot.com",
+      messagingSenderId: "693799285364",
+      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const emailInfo = document.getElementById('emailInfo');
+    const userWelcome = document.getElementById('userWelcome');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        emailInfo.textContent = `📧 Logged in as: ${user.email}`;
+        userWelcome.textContent = `👋 Welcome, ${user.email}`;
+      } else {
+        // Redirect to login if not authenticated
+        window.location.href = 'index.html';
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        alert('Logout failed: ' + error.message);
+      });
+    });
+  </script>
+</body>
+</html>
