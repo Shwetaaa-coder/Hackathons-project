@@ -47,6 +47,31 @@
       font-size: 18px;
       margin-bottom: 20px;
     }
+
+    .navbar {
+      background: linear-gradient(90deg, #1f4037, #99f2c8);
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .navbar a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    
   </style>
 </head>
 <body>
@@ -54,6 +79,13 @@
     <div id="userWelcome">Welcome!</div>
     <button class="logout-btn" id="logoutBtn">Logout</button>
   </header>
+
+  <nav class="navbar">
+    <a href="dashboard.html">🏠 Home</a>
+    <a href="gallery.html">🖼️ My Memes</a>
+    <a href="meme-creation.html">🎨 Create Meme</a>
+    <a href="explore.html">🔍 Explore</a>
+  </nav>
 
   <div class="container">
     <h1>Dashboard</h1>

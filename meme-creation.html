@@ -6,30 +6,71 @@
   <title>Meme Creation Studio - MemeHub</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f2f2;
     }
+
     header {
-      background-color: #333;
+      background: #1f4037;
       color: white;
-      padding: 10px 20px;
+      padding: 15px 30px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
     }
-    #logo {
-      font-weight: bold;
-      font-size: 24px;
+
+    .logout-btn {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
       cursor: pointer;
     }
-    nav a {
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .email-info {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .navbar {
+      background: linear-gradient(90deg, #1f4037, #99f2c8);
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+
+    .navbar a {
       color: white;
-      margin-left: 20px;
       text-decoration: none;
       font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
     }
+    
+.navbar a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
     #content {
       max-width: 900px;
       margin: 20px auto;
@@ -88,78 +129,90 @@
   </style>
 </head>
 <body>
-  <header>
-    <div id="logo" onclick="window.location.href='index.html'">MemeHub</div>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="gallery.html">Gallery</a>
-      <a href="meme-creation.html">Meme Creation Studio</a>
-    </nav>
+ <header>
+    <div id="userWelcome">Welcome!</div>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
   </header>
-  <div id="content">
-    <h2>Meme Creation Studio</h2>
 
-    <div class="section">
-      <label for="imageUpload">Upload Image:</label>
-      <input type="file" id="imageUpload" accept="image/*" />
+  <nav class="navbar">
+    <a href="dashboard.html">🏠 Home</a>
+    <a href="gallery.html">🖼️ My Memes</a>
+    <a href="meme-creation.html">🎨 Create Meme</a>
+    <a href="explore.html">🔍 Explore</a>
+  </nav>
+
+
+  <div id="content" style="display: flex; gap: 20px;">
+
+    <div id="leftPanel" style="flex: 1; max-width: 350px;">
+      <h2>Meme Creation Studio</h2>
+
+      <div class="section">
+        <label for="imageUpload">Upload Image:</label>
+        <input type="file" id="imageUpload" accept="image/*" />
+      </div>
+
+      <div class="section">
+        <label for="templateSelect">Or pick a template:</label>
+        <select id="templateSelect">
+          <option value="">-- Select Template --</option>
+          <option value="https://i.imgflip.com/1ur9b0.jpg">Distracted Boyfriend</option>
+          <option value="https://i.imgflip.com/30b1gx.jpg">Drake Hotline Bling</option>
+          <option value="https://i.imgflip.com/1g8my4.jpg">Two Buttons</option>
+        </select>
+      </div>
+
+      <div class="section">
+        <label for="topText">Top Text:</label>
+        <input type="text" id="topText" placeholder="Enter top text" />
+        <label for="bottomText">Bottom Text:</label>
+        <input type="text" id="bottomText" placeholder="Enter bottom text" />
+      </div>
+
+      <div class="section">
+        <label for="fontStyle">Font Style:</label>
+        <select id="fontStyle">
+          <option value="Impact">Impact</option>
+          <option value="Arial">Arial</option>
+          <option value="Comic Sans MS">Comic Sans MS</option>
+          <option value="Courier New">Courier New</option>
+        </select>
+        <label for="fontSize">Font Size:</label>
+        <input type="number" id="fontSize" value="40" min="10" max="100" />
+        <label for="fontColor">Font Color:</label>
+        <input type="color" id="fontColor" value="#FFFFFF" />
+        <label for="fontAlign">Font Alignment:</label>
+        <select id="fontAlign">
+          <option value="center">Center</option>
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+
+      <div class="section">
+        <button id="aiCaptionImage">AI Caption Generator (Image)</button>
+        <button id="aiCaptionText">AI Caption Generator (Text)</button>
+      </div>
+
+      <div class="section">
+        <button id="saveDraft">Save as Draft</button>
+        <button id="publishMeme">Publish to Feed</button>
+      </div>
     </div>
 
-    <div class="section">
-      <label for="templateSelect">Or pick a template:</label>
-      <select id="templateSelect">
-        <option value="">-- Select Template --</option>
-        <option value="https://i.imgflip.com/1ur9b0.jpg">Distracted Boyfriend</option>
-        <option value="https://i.imgflip.com/30b1gx.jpg">Drake Hotline Bling</option>
-        <option value="https://i.imgflip.com/1g8my4.jpg">Two Buttons</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <label for="topText">Top Text:</label>
-      <input type="text" id="topText" placeholder="Enter top text" />
-      <label for="bottomText">Bottom Text:</label>
-      <input type="text" id="bottomText" placeholder="Enter bottom text" />
-    </div>
-
-    <div class="section">
-      <label for="fontStyle">Font Style:</label>
-      <select id="fontStyle">
-        <option value="Impact">Impact</option>
-        <option value="Arial">Arial</option>
-        <option value="Comic Sans MS">Comic Sans MS</option>
-        <option value="Courier New">Courier New</option>
-      </select>
-      <label for="fontSize">Font Size:</label>
-      <input type="number" id="fontSize" value="40" min="10" max="100" />
-      <label for="fontColor">Font Color:</label>
-      <input type="color" id="fontColor" value="#FFFFFF" />
-      <label for="fontAlign">Font Alignment:</label>
-      <select id="fontAlign">
-        <option value="center">Center</option>
-        <option value="left">Left</option>
-        <option value="right">Right</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <button id="aiCaptionImage">AI Caption Generator (Image)</button>
-      <button id="aiCaptionText">AI Caption Generator (Text)</button>
-    </div>
-
-    <div class="section">
-      <button id="saveDraft">Save as Draft</button>
-      <button id="publishMeme">Publish to Feed</button>
-    </div>
-
-    <div id="canvasContainer">
-      <canvas id="memeCanvas" width="500" height="500"></canvas>
-      <div id="previewTextTop"></div>
-      <div id="previewTextBottom"></div>
+    <div id="rightPanel" style="flex: 1; max-width: 550px;">
+      <div id="canvasContainer" style="height: auto; width: auto;">
+        <canvas id="memeCanvas" width="500" height="500"></canvas>
+        <div id="previewTextTop"></div>
+        <div id="previewTextBottom"></div>
+      </div>
     </div>
   </div>
 
-  <script type="module">
+
+ <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
     import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
 
     const firebaseConfig = {
@@ -167,14 +220,37 @@
       authDomain: "hackathons-project-83560.firebaseapp.com",
       databaseURL: "https://hackathons-project-83560-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "hackathons-project-83560",
-      storageBucket: "hackathons-project-83560.firebasestorage.app",
+      storageBucket: "hackathons-project-83560.appspot.com",
       messagingSenderId: "693799285364",
-      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721",
-      measurementId: "G-KJ3HEQ2DWR"
+      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721"
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const database = getDatabase(app);
+
+    // Removed emailInfo as it does not exist in this page
+    const userWelcome = document.getElementById('userWelcome');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Removed emailInfo.textContent update
+        userWelcome.textContent = `👋 Welcome, ${user.email}`;
+      } else {
+        // Redirect to login if not authenticated
+        window.location.href = 'index.html';
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        alert('Logout failed: ' + error.message);
+      });
+    });
+  
 
     const canvas = document.getElementById('memeCanvas');
     const ctx = canvas.getContext('2d');
