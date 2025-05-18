@@ -38,57 +38,32 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    ul#memes {
-      list-style: none;
-      padding: 0;
+    #meme-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    ul#memes li {
-      border-bottom: 1px solid #ccc;
-      padding: 10px 0;
+    .meme-item {
+      width: 300px;
+      margin: 10px;
+      text-align: center;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
-    .meme-text {
-      font-size: 18px;
-      margin-bottom: 5px;
+    .meme-item img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
-    .meme-tags {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 5px;
-    }
-    .meme-actions button {
-      margin-right: 5px;
-    }
-    .comments {
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .comments ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    .comments li {
-      border-top: 1px solid #eee;
-      padding: 5px 0;
-    }
-    .comment-input {
-      margin-top: 5px;
-    }
-    .comment-input input[type="text"] {
-      width: 60%;
-      padding: 5px;
-      font-size: 14px;
-    }
-    .comment-input button {
-      padding: 5px 10px;
-      font-size: 14px;
-    }
-    .flagged {
-      color: red;
+    .meme-item p {
+      font-size: 16px;
       font-weight: bold;
+      margin: 10px;
+      color: #333;
     }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js"></script>
 </head>
 <body>
   <header>
@@ -99,16 +74,16 @@
       <a href="meme-creation.html">Meme Creation Studio</a>
     </nav>
   </header>
+
   <div id="content">
     <h2>Meme Gallery</h2>
-    <ul id="memes"></ul>
+    <div id="meme-gallery"></div>
   </div>
-  <footer style="background-color: #333; padding: 10px; color: white; text-align: center; margin-top: 20px;">
-    &copy; 2024 MemeHub. All rights reserved.
-  </footer>
 
-  <script>
-    // Firebase configuration
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
       authDomain: "hackathons-project-83560.firebaseapp.com",
@@ -121,182 +96,53 @@
     };
 
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // DOM elements
-    const memesList = document.getElementById('memes');
-
-    // User ID for voting
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('userId', userId);
-    }
-
-    // Debounce helper
-    function debounce(func, wait) {
-      let timeout;
-      return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-      };
-    }
-
-    // Basic profanity filter (example)
-    const bannedWords = ['badword1', 'badword2', 'badword3'];
-    function containsBannedWords(text) {
-      const lower = text.toLowerCase();
-      return bannedWords.some(word => lower.includes(word));
-    }
-
-    // Load memes from Firebase
-    function loadMemes() {
-      const memesRef = database.ref('memes');
-      memesRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        memesList.innerHTML = '';
-        if (data) {
-          Object.entries(data).forEach(([id, meme]) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <div class="meme-text">${meme.text}</div>
-              <div class="meme-tags">${(meme.tags || []).join(', ')}</div>
-              <div class="meme-actions">
-                <button data-id="${id}" class="upvote">Upvote</button>
-                <button data-id="${id}" class="downvote">Downvote</button>
-                <span class="votes" id="votes-${id}">Votes: 0</span>
-                <button data-id="${id}" class="flag">Flag/Report</button>
-                <span class="flagged" id="flagged-${id}" style="display:none;">Flagged for review</span>
-              </div>
-              <div class="comments">
-                <form data-id="${id}" class="comment-form">
-                  <input type="text" maxlength="140" placeholder="Add a comment (max 140 chars)" required />
-                  <button type="submit">Comment</button>
-                </form>
-                <ul id="comments-${id}"></ul>
-              </div>
-            `;
-            memesList.appendChild(li);
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const memesRef = ref(database, 'memes');
+    
+    // Fetch and display memes
+    get(memesRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const memes = snapshot.val();
+          const galleryContainer = document.getElementById('meme-gallery');
+          
+          // Loop through each meme and create an image element
+          Object.keys(memes).forEach(memeId => {
+            const meme = memes[memeId];
+            
+            const memeDiv = document.createElement('div');
+            memeDiv.classList.add('meme-item');
+            
+            const img = document.createElement('img');
+            img.src = meme.image; // Cloudinary URL
+            img.alt = 'Meme image';
+            memeDiv.appendChild(img);
+            
+            const topText = document.createElement('p');
+            topText.classList.add('top-text');
+            topText.innerText = meme.topText;
+            memeDiv.appendChild(topText);
+            
+            const bottomText = document.createElement('p');
+            bottomText.classList.add('bottom-text');
+            bottomText.innerText = meme.bottomText;
+            memeDiv.appendChild(bottomText);
+            
+            galleryContainer.appendChild(memeDiv);
           });
-          attachEventListeners();
-          loadVotes();
-          loadFlags();
-          loadComments();
+        } else {
+          const noMemesMessage = document.createElement('p');
+          noMemesMessage.innerText = 'No memes found in the gallery.';
+          document.getElementById('meme-gallery').appendChild(noMemesMessage);
         }
+      })
+      .catch((error) => {
+        console.error('Error fetching memes:', error);
+        const errorMessage = document.createElement('p');
+        errorMessage.innerText = 'Failed to load memes. Please try again later.';
+        document.getElementById('meme-gallery').appendChild(errorMessage);
       });
-    }
-
-    // Attach event listeners to buttons and forms
-    function attachEventListeners() {
-      document.querySelectorAll('.upvote').forEach(button => {
-        button.onclick = debounce(() => handleVote(button.dataset.id, 1), 300);
-      });
-      document.querySelectorAll('.downvote').forEach(button => {
-        button.onclick = debounce(() => handleVote(button.dataset.id, -1), 300);
-      });
-      document.querySelectorAll('.flag').forEach(button => {
-        button.onclick = () => handleFlag(button.dataset.id);
-      });
-      document.querySelectorAll('.comment-form').forEach(form => {
-        form.onsubmit = (e) => {
-          e.preventDefault();
-          const memeId = form.dataset.id;
-          const input = form.querySelector('input[type="text"]');
-          const text = input.value.trim();
-          if (text === '' || text.length > 140) return;
-          if (containsBannedWords(text)) {
-            alert('Your comment contains inappropriate language.');
-            return;
-          }
-          handleCommentSubmit(memeId, text);
-          input.value = '';
-        };
-      });
-    }
-
-    // Optimistic UI update for voting
-    const voteCache = {};
-    function handleVote(memeId, voteValue) {
-      // Optimistically update UI
-      const voteSpan = document.getElementById(`votes-${memeId}`);
-      if (!voteSpan) return;
-      let currentVotes = parseInt(voteSpan.textContent.replace('Votes: ', '')) || 0;
-      if (!voteCache[memeId]) voteCache[memeId] = 0;
-      currentVotes = currentVotes - voteCache[memeId] + voteValue;
-      voteSpan.textContent = `Votes: ${currentVotes}`;
-      voteCache[memeId] = voteValue;
-
-      // Update Firebase
-      const voteRef = database.ref(`votes/${memeId}/${userId}`);
-      voteRef.set(voteValue);
-    }
-
-    // Load votes and update UI
-    function loadVotes() {
-      const votesRef = database.ref('votes');
-      votesRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        Object.entries(data).forEach(([memeId, votes]) => {
-          const voteCount = Object.values(votes).reduce((acc, val) => acc + val, 0);
-          const voteSpan = document.getElementById(`votes-${memeId}`);
-          if (voteSpan) voteSpan.textContent = `Votes: ${voteCount}`;
-          voteCache[memeId] = 0; // reset cache on load
-        });
-      });
-    }
-
-    // Handle flagging
-    function handleFlag(memeId) {
-      const flagRef = database.ref(`flags/${memeId}`);
-      flagRef.set(true);
-      alert('Content flagged for moderation.');
-    }
-
-    // Load flags and update UI
-    function loadFlags() {
-      const flagsRef = database.ref('flags');
-      flagsRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        Object.entries(data).forEach(([memeId, flagged]) => {
-          const flagSpan = document.getElementById(`flagged-${memeId}`);
-          if (flagSpan) flagSpan.style.display = flagged ? 'inline' : 'none';
-        });
-      });
-    }
-
-    // Handle comment submission
-    function handleCommentSubmit(memeId, text) {
-      const commentRef = database.ref(`comments/${memeId}`);
-      commentRef.push({ text });
-    }
-
-    // Load comments and update UI
-    function loadComments() {
-      const commentsRef = database.ref('comments');
-      commentsRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        Object.entries(data).forEach(([memeId, comments]) => {
-          const commentsUl = document.getElementById(`comments-${memeId}`);
-          if (commentsUl) {
-            commentsUl.innerHTML = '';
-            Object.values(comments).forEach(comment => {
-              const li = document.createElement('li');
-              li.textContent = comment.text;
-              commentsUl.appendChild(li);
-            });
-          }
-        });
-      });
-    }
-
-    // Placeholder for AI tag suggestions
-    function suggestTags(memeId) {
-      alert('AI tag suggestion feature coming soon!');
-    }
-
-    // Initial load
-    loadMemes();
   </script>
 </body>
 </html>

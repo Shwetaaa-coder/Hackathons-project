@@ -158,9 +158,10 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js"></script>
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
       authDomain: "hackathons-project-83560.firebaseapp.com",
@@ -172,8 +173,8 @@
       measurementId: "G-KJ3HEQ2DWR"
     };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
     const canvas = document.getElementById('memeCanvas');
     const ctx = canvas.getContext('2d');
@@ -269,15 +270,15 @@
         fontAlign: fontAlignSelect.value,
         tags: [] // Tags can be added later with AI suggestions
       };
-      const memesRef = database.ref('memes');
-      memesRef.push(memeData, (error) => {
-        if (error) {
-          alert('Error publishing meme: ' + error.message);
-        } else {
+      const memesRef = ref(database, 'memes');
+      push(memesRef, memeData)
+        .then(() => {
           alert('Meme published successfully!');
           window.location.href = 'gallery.html';
-        }
-      });
+        })
+        .catch((error) => {
+          alert('Error publishing meme: ' + error.message);
+        });
     });
 
     // Initialize with blank image
