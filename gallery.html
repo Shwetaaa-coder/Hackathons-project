@@ -1,41 +1,83 @@
-
-
-        
-
-
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meme Gallery - MemeHub</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
+   body {
       margin: 0;
-      padding: 0;
-      background: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f2f2;
     }
+
     header {
-      background-color: #333;
+      background: #1f4037;
       color: white;
-      padding: 10px 20px;
+      padding: 15px 30px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
     }
-    #logo {
-      font-weight: bold;
-      font-size: 24px;
+
+    .logout-btn {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
       cursor: pointer;
     }
-    nav a {
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .email-info {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .navbar {
+      background: linear-gradient(90deg, #1f4037, #99f2c8);
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      /* margin-top: 20px; */
+      border-radius: 10px;
+    }
+
+    .navbar a {
       color: white;
-      margin-left: 20px;
       text-decoration: none;
       font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background 0.3s ease;
     }
+
+    .navbar a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+
+ 
+
+
+
+
+
     #content {
       max-width: 900px;
       margin: 20px auto;
@@ -93,6 +135,11 @@
   </style>
 </head>
 <body>
+  <header>
+    <div id="userWelcome">Welcome!</div>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </header>
+
   <nav class="navbar">
     <a href="dashboard.html">🏠 Home</a>
     <a href="explore.html">🔍 Explore</a>
@@ -103,7 +150,7 @@
   </nav>
 
   <div id="content">
-    <h2>Meme Gallery</h2>
+    <h2 style="text-align: center;">Meme Gallery</h2>
     <div id="meme-gallery"></div>
   </div>
 
