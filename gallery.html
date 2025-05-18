@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+
+
+        
+
+
+
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -51,17 +57,38 @@
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      padding: 10px;
     }
     .meme-item img {
       width: 100%;
       height: auto;
       display: block;
+      border-bottom: 1px solid #ccc;
     }
     .meme-item p {
       font-size: 16px;
       font-weight: bold;
-      margin: 10px;
+      margin: 10px 0;
       color: #333;
+    }
+    button {
+      margin: 5px;
+      padding: 6px 12px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+    .edit-btn {
+      background-color: #3498db;
+      color: white;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+    }
+    button:hover {
+      opacity: 0.85;
     }
   </style>
 </head>
@@ -71,7 +98,7 @@
     <nav>
       <a href="index.html">Home</a>
       <a href="gallery.html">Gallery</a>
-      <a href="meme-creation.html">Meme Creation Studio</a>
+      <a href="meme-creation.html">Meme Studio</a>
     </nav>
   </header>
 
@@ -82,69 +109,121 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
+    import { getDatabase, ref, get, remove, update } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
       authDomain: "hackathons-project-83560.firebaseapp.com",
       databaseURL: "https://hackathons-project-83560-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "hackathons-project-83560",
-      storageBucket: "hackathons-project-83560.firebasestorage.app",
+      storageBucket: "hackathons-project-83560.appspot.com",
       messagingSenderId: "693799285364",
-      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721",
-      measurementId: "G-KJ3HEQ2DWR"
+      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const memesRef = ref(database, 'memes');
-    
-    // Fetch and display memes
+
     get(memesRef)
-      .then((snapshot) => {
+      .then(snapshot => {
         if (snapshot.exists()) {
           const memes = snapshot.val();
-          const galleryContainer = document.getElementById('meme-gallery');
-          
-          // Loop through each meme and create an image element
-          Object.keys(memes).forEach(memeId => {
-            const meme = memes[memeId];
-            
-            const memeDiv = document.createElement('div');
-            memeDiv.classList.add('meme-item');
-            
+          const gallery = document.getElementById('meme-gallery');
+
+          Object.entries(memes).forEach(([memeId, meme]) => {
+            const div = document.createElement('div');
+            div.classList.add('meme-item');
+
             const img = document.createElement('img');
-            img.src = meme.image; // Cloudinary URL
-            img.alt = 'Meme image';
-            memeDiv.appendChild(img);
-            
-            const topText = document.createElement('p');
-            topText.classList.add('top-text');
-            topText.innerText = meme.topText;
-            memeDiv.appendChild(topText);
-            
-            const bottomText = document.createElement('p');
-            bottomText.classList.add('bottom-text');
-            bottomText.innerText = meme.bottomText;
-            memeDiv.appendChild(bottomText);
-            
-            galleryContainer.appendChild(memeDiv);
+            img.src = meme.image;
+            img.alt = "Meme Image";
+            div.appendChild(img);
+
+            const top = document.createElement('p');
+            top.innerText = meme.topText || "";
+            div.appendChild(top);
+
+            const bottom = document.createElement('p');
+            bottom.innerText = meme.bottomText || "";
+            div.appendChild(bottom);
+
+            // Edit Button
+            const editBtn = document.createElement('button');
+            editBtn.innerText = 'Edit';
+            editBtn.className = 'edit-btn';
+            editBtn.onclick = () => {
+              const newTop = prompt("Edit top text:", meme.topText);
+              const newBottom = prompt("Edit bottom text:", meme.bottomText);
+              if (newTop !== null && newBottom !== null) {
+                const memeRef = ref(database, 'memes/' + memeId);
+                update(memeRef, { topText: newTop, bottomText: newBottom })
+                  .then(() => {
+                    alert("Meme updated!");
+                    location.reload();
+                  });
+              }
+            };
+            div.appendChild(editBtn);
+
+            // Like Button
+            const likeBtn = document.createElement('button');
+            likeBtn.innerText = `👍 Like (${meme.likes || 0})`;
+            likeBtn.className = 'like-btn';
+            likeBtn.onclick = () => {
+              const memeRef = ref(database, 'memes/' + memeId);
+              const newLikes = (meme.likes || 0) + 1;
+              update(memeRef, { likes: newLikes })
+                .then(() => {
+                  likeBtn.innerText = `👍 Like (${newLikes})`;
+                })
+                .catch(() => {
+                  alert('Failed to update likes.');
+                });
+            };
+            div.appendChild(likeBtn);
+
+            // Share Button
+            const shareBtn = document.createElement('button');
+            shareBtn.innerText = '🔗 Share';
+            shareBtn.className = 'share-btn';
+            shareBtn.onclick = () => {
+              const shareUrl = window.location.href + `#meme-${memeId}`;
+              navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                  alert('Meme link copied to clipboard!');
+                })
+                .catch(() => {
+                  alert('Failed to copy link.');
+                });
+            };
+            div.appendChild(shareBtn);
+
+            // Delete Button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerText = 'Delete';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.onclick = () => {
+              if (confirm("Are you sure you want to delete this meme?")) {
+                remove(ref(database, 'memes/' + memeId))
+                  .then(() => {
+                    alert("Meme deleted.");
+                    location.reload();
+                  });
+              }
+            };
+            div.appendChild(deleteBtn);
+
+            gallery.appendChild(div);
           });
         } else {
-          const noMemesMessage = document.createElement('p');
-          noMemesMessage.innerText = 'No memes found in the gallery.';
-          document.getElementById('meme-gallery').appendChild(noMemesMessage);
+          document.getElementById('meme-gallery').innerText = "No memes found.";
         }
       })
-      .catch((error) => {
-        console.error('Error fetching memes:', error);
-        const errorMessage = document.createElement('p');
-        errorMessage.innerText = 'Failed to load memes. Please try again later.';
-        document.getElementById('meme-gallery').appendChild(errorMessage);
+      .catch(error => {
+        console.error("Error loading memes:", error);
+        document.getElementById('meme-gallery').innerText = "Failed to load memes.";
       });
   </script>
 </body>
 </html> 
-
-
