@@ -9,6 +9,7 @@
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: #f2f2f2;
+      /* color: #333; */
     }
 
     header {
@@ -49,7 +50,8 @@
     }
 
     .navbar {
-      background: linear-gradient(90deg, #1f4037, #99f2c8);
+      /* background: linear-gradient(90deg, #1f4037, #99f2c8); */
+      background: linear-gradient(90deg, #b9ebdd, #37d88d);;
       display: flex;
       justify-content: center;
       gap: 30px;
@@ -59,7 +61,8 @@
     }
 
     .navbar a {
-      color: white;
+      /* color: white; */
+      color: #1f4037;
       text-decoration: none;
       font-weight: bold;
       padding: 8px 12px;
@@ -72,28 +75,364 @@
     }
 
 
+
+    .main-section {
+    background-color: #37d88d;
+    padding: 80px 20px;
+    text-align: center;
+    color: rgb(19, 2, 2);
+    font-family: Arial, sans-serif;
+}
+
+.main-section h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+}
+
+.main-section p {
+    font-size: 1.3rem;
+    color: #252020;
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+
+.btn-group {
+    display: inline-flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    
+}
+
+.btn-primary {
+    background-color: #f4fcf7;
+    color: rgb(1, 1, 1);
+}
+
+.btn-primary:hover {
+    background-color: #17a74a;
+}
+
+.btn-secondary {
+    background-color: #f4fcf7;
+    border: 2px solid #ffffff;
+    color:black;
+}
+
+.btn-secondary:hover {
+    background-color: #1db954;
+    color: white;
+}
+
+.arrow {
+    font-weight: 900;
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 80px 20px;
+    flex-wrap: wrap;
+}
+
+.feature-box {
+    background: #37d88d;
+    padding: 24px;
+    border-radius: 12px;
+    width: 280px;
+    color:black;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.4);
+    transition: background-color 0.3s;
+}
+
+body.light .feature-box {
+    background: #fff;
+    color: #111;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+}
+
+.feature-icon {
+    font-size: 50px;
+}
+
+.feature-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 12px;
+    margin-bottom: 6px;
+}
+
+.feature-description {
+    color: black;
+}
+
+body.light .feature-description {
+    color: #444;
+}
+
+/* How It Works Section */
+.how-it-works {
+    text-align: center;
+    margin: 80px 20px;
+}
+
+.steps {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.step {
+    background-color:#37d88d;
+    border-radius: 12px;
+    padding: 24px;
+    width: 240px;
+    color: white;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.4);
+    transition: background-color 0.3s;
+}
+
+body.light .step {
+    background-color: #fff;
+    color: #111;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+}
+
+.step-number {
+    background-color: #fcfffd;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4rem;
+    color: rgb(0, 0, 0);
+}
+
+.step-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.step-description {
+    color: black;
+}
+
+body.light .step-description {
+    color: #444;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background-color:#37d88d;
+    color:black;
+    text-align: center;
+    padding: 60px 20px;
+    margin-top: 80px;
+}
+
+body.light .cta-section {
+    background-color: #e0e0e0;
+    color: #111;
+}
+
+.cta-heading {
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+    color: black;
+}
+
+.cta-subtext {
+    font-size: 1.3rem;
+    margin-bottom: 30px;
+    color:black;
+}
+
+body.light .cta-subtext {
+    color :black;
+}
+
+.cta-button {
+    background-color: #fcfcfc;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 16px 40px;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+    background-color: #17a74a;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px 10px;
+    background: #1f4037;
+    color: black;
+    font-size: 0.9rem;
+    margin-top: 80px;
+    border-top: 1px solid #222;
+}
+
+body.light footer {
+    background-color: #fff;
+    color: #777;
+    border-top: 1px solid #ddd;
+}
+
+footer a {
+    color: #666;
+    text-decoration: none;
+    margin: 0 6px;
+    font-weight: 600;
+}
+
+body.light footer a {
+    color: #999;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+
+    .features,
+    .steps {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
   </style>
 </head>
 <body>
   <header>
-    <div id="userWelcome">Welcome!</div>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-  </header>
-
-  <nav class="navbar">
+    <div id="userWelcome">Welcome!   Home</div>
+    
+    <nav class="navbar">
     <a href="dashboard.html">🏠 Home</a>
     <a href="explore.html">🔍 Explore</a>
     <a href="meme-creation.html">🎨 Create Meme</a>
     <a href="gallery.html">🖼️ My Memes</a>
-    
-    
+    <a href="profile.html">👤 Profile</a>
+  
   </nav>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </header>
 
-  <div class="container">
+  <hr>
+   <main class="main-section">
+        <h1>The Internet's Playground for Memes</h1>
+        <p>Create, share, and track the performance of your memes on the web's premier meme platform.</p>
+        <div class="btn-group">
+            <button class="btn btn-primary" >
+               <a href="meme-creation.html"style="text-decoration: none;"> Create a Meme</a> <span class="arrow">→</span>
+            </button>
+            <a href="./Explore.html"style="text-decoration: none;"><button class="btn btn-secondary">Explore</button></a>
+        </div>
+    </main>
+
+
+
+    <h1 style="text-align: center;">Everything You Need for Meme Domination</h1>
+    <div class="features">
+        <div class="feature-box">
+            <span class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-60h600v-600H180v600Zm56-97h489L578-473 446-302l-93-127-117 152Zm-56 97v-600 600Zm160.12-390q20.88 0 35.38-14.62 14.5-14.62 14.5-35.5 0-20.88-14.62-35.38-14.62-14.5-35.5-14.5-20.88 0-35.38 14.62-14.5 14.62-14.5 35.5 0 20.88 14.62 35.38 14.62 14.5 35.5 14.5Z"/></svg></span>
+            <div class="feature-title">Powerful Creation Studio</div>
+            <div class="feature-description">
+                Upload images or use templates. Customize text, fonts, and colors to create the perfect meme.
+            </div>
+        </div>
+        <div class="feature-box">
+            <span class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#e3e3e3"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg></span>
+            <div class="feature-title">Community Engagement</div>
+            <div class="feature-description">
+                Vote, comment, and share. Watch your memes climb the ranks and go viral.
+            </div>
+        </div>
+        <div class="feature-box">
+            <span class="feature-icon"><svg xmlns="http://www.w3.org/2000/svg" height="50px" viewBox="0 -960 960 960" width="50px" fill="#e3e3e3"><path d="m136-240-56-56 296-298 160 160 208-206H640v-80h240v240h-80v-104L536-320 376-480 136-240Z"/></svg></span>
+            <div class="feature-title">Performance Analytics</div>
+            <div class="feature-description">
+                Track views, votes, and comments. See how your memes perform over time.
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: How It Works -->
+    <div class="how-it-works">
+        <h1>How MemeHub Works</h1>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title"><a href="meme-creation.html"style="text-decoration: none;">Create</a></div>
+                <div class="step-description">Design your meme using our intuitive studio</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title"><a href="explore.html"style="text-decoration: none;">Share</a></div>
+                <div class="step-description">Publish your creation to the MemeHub community</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title"> <a href="profile.html" style="text-decoration: none;">Track</a></div>
+                <div class="step-description">Watch your meme's performance metrics in real-time</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2 class="cta-heading">Ready to Become a Meme Master?</h2>
+        <p class="cta-subtext">
+            Join thousands of creators who are making and sharing the internet's favorite content.
+        </p>
+        <button class="cta-button">Get Started Today</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 MemeHub. All rights reserved.</p>
+        <p>
+            <a href="#">About</a> |
+            <a href="#">Terms</a> |
+            <a href="#">Privacy</a> |
+            <a href="#">Contact</a>
+        </p>
+    </footer>
+
+
+  <!-- <div class="container">
     <h1>Dashboard</h1>
     <div class="email-info" id="emailInfo">Loading user info...</div>
     <p>Here you can access your memes, edit profile, and more!</p>
-  </div>
+  </div> -->
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
