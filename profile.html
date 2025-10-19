@@ -17,7 +17,7 @@
     }
 
     header {
-      background: skyblue;
+      background: #1f4037;
       color: white;
       padding: 15px 30px;
       display: flex;
@@ -55,7 +55,7 @@
 
     .navbar {
       /* background: linear-gradient(90deg, #1f4037, #99f2c8); */
-      background: #b4a573;
+      background: linear-gradient(90deg, #b9ebdd, #37d88d);;
       display: flex;
       justify-content: center;
       gap: 30px;
@@ -65,7 +65,7 @@
     }
 
     .navbar a {
-      color: white;
+        color: #1f4037;
       text-decoration: none;
       font-weight: bold;
       padding: 8px 12px;
@@ -385,9 +385,9 @@
         }
 
         footer {
-    text-align: center;
+            text-align: center;
     padding: 20px 10px;
-    background-color:skyblue;
+    background: #1f4037;
     color: black;
     font-size: 0.9rem;
     margin-top: 80px;
@@ -431,18 +431,23 @@ footer a:hover {
 </head>
 
 <body class="bg-gray-50 text-gray-900">
-    <div id="userWelcome">Welcome!   Home</div>
+    <!-- <div id="userWelcome">Welcome!   Home</div> -->
     
-    <nav class="navbar">
-    <a href="dashboard.html">🏠 Home</a>
-    <a href="explore.html">🔍 Explore</a>
-    <a href="meme-creation.html">🎨 Create Meme</a>
-    <a href="gallery.html">🖼️ My Memes</a>
-    <a href="profile.html">👤 Profile</a>
+    <header>
+        <div id="userWelcome">Welcome!   Profile</div>
+        
+        <nav class="navbar">
+        <a href="dashboard.html">🏠 Home</a>
+        <a href="explore.html">🔍 Explore</a>
+        <a href="meme-creation.html">🎨 Create Meme</a>
+        <a href="gallery.html">🖼️ My Memes</a>
+        <a href="profile.html">👤 Profile</a>
+      
+      </nav>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </header>
+    <!-- <button class="logout-btn" id="logoutBtn">Logout</button> -->
   
-  </nav>
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-  </header>
 
     <div class="container">
         <!-- Profile Header -->
@@ -463,7 +468,7 @@ footer a:hover {
         <!-- Upload Meme Form -->
         <div class="upload-form">
             <h3>Upload New Meme</h3>
-            <a href="./Create.html"><button>Post Meme</button></a>
+            <a href="meme-creation.html"><button>Post Meme</button></a>
         </div>
     </div>
     <div class="container mx-auto px-4 py-12">
@@ -481,7 +486,7 @@ footer a:hover {
     </footer>
 
 
-    <script>
+    <script type="module">
         const followBtn = document.getElementById('followBtn');
         const memeCount = document.getElementById('memeCount')
         const likeCountDisplay = document.getElementById('likeCount');
@@ -696,6 +701,43 @@ footer a:hover {
         fetchMemes();
        
 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBv1mD2brzhfDxgZyjUis6j0XmhsQcPwMI",
+      authDomain: "hackathons-project-83560.firebaseapp.com",
+      databaseURL: "https://hackathons-project-83560-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "hackathons-project-83560",
+      storageBucket: "hackathons-project-83560.appspot.com",
+      messagingSenderId: "693799285364",
+      appId: "1:693799285364:web:3c5b3ea19bf53bd4ce9721"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const emailInfo = document.getElementById('emailInfo');
+    const userWelcome = document.getElementById('userWelcome');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        emailInfo.textContent = `📧 Logged in as: ${user.email}`;
+        userWelcome.textContent = `👋 Welcome, ${user.email}`;
+      } else {
+        // Redirect to login if not authenticated
+        window.location.href = 'index.html';
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        alert('Logout failed: ' + error.message);
+      });
+    });
     </script>
 </body>
 
