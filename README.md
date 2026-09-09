@@ -64,7 +64,7 @@ No additional installation or backend setup is required.
 
 ## 🌐 Live Demo
 
-[Add your live project link here]
+[[Add your live project link here]](https://memeshubbyshweta.netlify.app/)
 
 ## 📂 Project Structure
 
@@ -93,6 +93,6 @@ The objective of this project is to build a lightweight browser-based meme creat
 
 **Shweta Bangar**
 
-GitHub: [Add your GitHub profile link]
+GitHub: [[Add your GitHub profile link]](https://github.com/Shwetaaa-coder
 
-LinkedIn: [Add your LinkedIn profile link]
+LinkedIn: [[Add your LinkedIn profile link]](https://www.linkedin.com/in/shweta-bangar/)
