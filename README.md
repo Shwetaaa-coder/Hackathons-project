@@ -31,7 +31,7 @@ You only need a modern web browser to run this project locally.
 1. Clone the repository:
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone [YOUR_GITHUB_REPOSITORY_URL](https://github.com/Shwetaaa-coder/Hackathons-project.git)
 ```
 
 2. Navigate to the project folder:
@@ -56,11 +56,13 @@ No additional installation or backend setup is required.
 
 ### Meme Creator Interface
 
-*Add a screenshot of your main application here.*
+<img width="1356" height="600" alt="image" src="https://github.com/user-attachments/assets/8ea28891-c028-469e-a3fd-2076af5a6fa5" />
+
 
 ### Meme Preview
 
-*Add a screenshot showing a generated meme here.*
+<img width="800" height="552" alt="image" src="https://github.com/user-attachments/assets/0c1d38fd-758e-47e3-9c7d-22089647bdf2" />
+
 
 ## 🌐 Live Demo
 
