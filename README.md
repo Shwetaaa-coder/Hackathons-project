@@ -31,7 +31,7 @@ You only need a modern web browser to run this project locally.
 1. Clone the repository:
 
 ```bash
-git clone [YOUR_GITHUB_REPOSITORY_URL](https://github.com/Shwetaaa-coder/Hackathons-project.git)
+git clone(https://github.com/Shwetaaa-coder/Hackathons-project.git)
 ```
 
 2. Navigate to the project folder:
@@ -66,7 +66,7 @@ No additional installation or backend setup is required.
 
 ## 🌐 Live Demo
 
-[[Add your live project link here]](https://memeshubbyshweta.netlify.app/)
+(https://memeshubbyshweta.netlify.app/)
 
 ## 📂 Project Structure
 
@@ -95,6 +95,6 @@ The objective of this project is to build a lightweight browser-based meme creat
 
 **Shweta Bangar**
 
-GitHub: [[Add your GitHub profile link]](https://github.com/Shwetaaa-coder
+GitHub: (https://github.com/Shwetaaa-coder
 
-LinkedIn: [[Add your LinkedIn profile link]](https://www.linkedin.com/in/shweta-bangar/)
+LinkedIn: (https://www.linkedin.com/in/shweta-bangar/)
