@@ -31,7 +31,7 @@ You only need a modern web browser to run this project locally.
 1. Clone the repository:
 
 ```bash
-git clone(https://github.com/Shwetaaa-coder/Hackathons-project.git)
+git clone https://github.com/Shwetaaa-coder/Hackathons-project.git
 ```
 
 2. Navigate to the project folder:
@@ -95,6 +95,6 @@ The objective of this project is to build a lightweight browser-based meme creat
 
 **Shweta Bangar**
 
-GitHub: (https://github.com/Shwetaaa-coder
+GitHub: (https://github.com/Shwetaaa-coder)
 
 LinkedIn: (https://www.linkedin.com/in/shweta-bangar/)
